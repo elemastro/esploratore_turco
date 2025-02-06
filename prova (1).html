@@ -1,0 +1,196 @@
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"/>
+        <link rel="shortcut icon" type="image/x-icon" href="resources/images/favicon.ico"/>
+        <link rel="shortcut icon" type="image/png" href="resources/images/favicon-16.png" sizes="16x16"/>
+        <link rel="shortcut icon" type="image/png" href="resources/images/favicon-24.png" sizes="24x24"/>
+        <link rel="shortcut icon" type="image/png" href="resources/images/favicon-32.png" sizes="32x32"/>
+        <link rel="shortcut icon" type="image/png" href="resources/images/favicon-64.png" sizes="64x64"/>
+        <link rel="shortcut icon" type="image/png" href="resources/images/placeholder.png"/>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"/>
+
+        <title data-template="config:app-title"/>
+        <meta name="description" content="prova template"/>
+        
+        <link rel="stylesheet" href="resources/css/theme.css"/>
+        <link rel="stylesheet" href="resources/css/applicazione.css"/>
+        <script type="module" src="pb-components-bundle.js" data-template="pages:load-components"/>
+        <script type="module" src="pb-leaflet-map.js" data-template="pages:load-components"/><!--per la mappa-->
+
+        <custom-style>
+            <style>
+                body {
+                    --pb-view-height: calc(100vh - 192px);
+                }
+
+                .content-body {
+                    position: relative;
+                    display: flex;
+                    justify-content: center;
+                    padding: 0 20px;
+                }
+
+                .metadata {
+                    width: 100%;
+                    padding: 0 20px 20px;
+                }
+                .metadata pb-view {
+                    font: var(--pb-base-font);
+                }
+                .metadata h3 pb-view {
+                    font-family: var(--pb-heading-font-family);
+                    font-weight: var(--pb-heading-font-weight);
+                }
+
+                .content-body #view1 {
+                    min-height: var(--pb-view-height);
+                    flex: 1;
+                }
+                
+                .content-body pb-facsimile {
+                    flex: 1;
+                    --pb-facsimile-height: var(--pb-view-height);
+                }
+
+                #tocToggle {
+                    display: none;
+                }
+                
+                #title-view1{
+                    text-align: center;
+                }
+                
+                /*per la mappa*/
+                pb-leaflet-map {
+                    position: absolute;
+                    width: 400px;
+                    height: 500px;
+                    box-shadow: -7px -6px 8px 0px #00000038;
+                    margin-top: 5%;
+                }
+            </style>
+        </custom-style>
+    </head>
+
+    <body unresolved="unresolved">
+        <pb-page data-template="pages:pb-page" unresolved="unresolved">
+            <pb-document id="document1" data-template="pages:pb-document"/>
+            <app-drawer-layout force-narrow="force-narrow">
+                <app-drawer data-template="lib:include" data-template-path="templates/drawer.html"/>
+                <app-header-layout>
+                    <app-header slot="header" reveals="reveals" fixed="fixed" effects="waterfall">
+                        <app-toolbar data-template="lib:include" data-template-path="templates/menu.html"/>
+                        <!-- Overwrite toolbar to add metadata toggle     <iron-icon icon="icons:reorder"/>  <iron-icon icon="icons:description"/>-->
+                        <app-toolbar data-template="lib:include" data-template-path="templates/toolbar.html">
+                            <paper-button id="metaToggle" raised="raised" data-target="toolbar-before">
+                                <iron-icon icon="icons:info-outline"/>Metadati
+                            </paper-button>
+                            
+                            <paper-button id="visualizza" class="but_manoscritto" raised="raised" data-target="toolbar-before">
+                                    Visualizza
+                            </paper-button>
+                            
+                            <paper-button id="mappa_luoghi" class="but_manoscritto" raised="raised" data-target="toolbar-before">
+                                    Mappa
+                            </paper-button>
+                        
+                            <paper-button class="but_manoscritto" raised="raised" data-target="toolbar-before">
+                                <pb-toggle-feature name="manoscritto" selector=".reg,.orig" action="disable" default="off" emit="transcription" subscribe="transcription">
+                                    Almansi-Warren 1968/Marana 1684
+                                </pb-toggle-feature>
+                            </paper-button>
+                        </app-toolbar>
+                    </app-header>
+
+                    <pb-drawer toggle="metaToggle" class="tocDrawer" emit="toc" subscribe="transcription">
+                        <div class="drawer-content">
+                            <pb-view id="commentary" src="document1" xpath="//teiHeader" view="single" subscribe="toc">
+                                <pb-param name="mode" value="commentary"/>
+                            </pb-view>
+                        </div>
+                    </pb-drawer>
+                    
+                    <pb-drawer toggle="visualizza" position="right" class="tocDrawer" emit="toc" subscribe="transcription">
+                        <div class="drawer-content">
+                            <div>La codifica semantica del testo si è basata sull'individuazione di entità nominate (persone, luoghi e organizzazioni), di avvenimenti storici, di date, di numeri e della bibliografia inserita nel testo.<br/>
+                                <br/>Ognuno di questi fenomeni è evidenziato nel testo con un colore diverso, per renderlo facilmente riconoscibile.<br/>
+                                <br/>Quando si passa il cursore sopra un fenomeno evidenziato verrà visualizzato un popup con delle informazioni aggiuntive.<br/>
+                                <br/>
+                                Se il lettore preferisce <b>visualizzare il testo semplice</b>, senza informazioni aggiuntive ed evidenziazione dei fenomeni, deve <b>attivare i seguenti bottoni</b>.<br/>Per ripristinare il comportamento precedente, basterà disattivare i bottoni.
+                                <br/>
+                                <br/>
+                            </div>
+                            <pb-toggle-feature name="persName" selector=".persName" action="disable" default="off" emit="transcription" subscribe="transcription">
+                                <span style="color:#8460B7; font-weight:bold;">Persone e riferimenti</span>
+                            </pb-toggle-feature>
+                            <br/>
+                            <pb-toggle-feature name="orgName" selector=".orgName" action="disable" default="off" emit="transcription" subscribe="transcription">
+                                <span style="color:#C0350F; font-weight:bold;">Organizzazioni e riferimenti</span>
+                            </pb-toggle-feature>
+                            <br/>
+                            <pb-toggle-feature name="placeName" selector=".placeName" action="disable" default="off" emit="transcription" subscribe="transcription">
+                                <span style="color:#6A9B41; font-weight:bold;">Luoghi e riferimenti</span>
+                            </pb-toggle-feature>
+                            <br/>
+                            <pb-toggle-feature name="eventName" selector=".eventName" action="disable" default="off" emit="transcription" subscribe="transcription">
+                                <span style="color:#1e629c; font-weight:bold;">Avvenimenti storici</span>
+                            </pb-toggle-feature>
+                            <br/>
+                            <pb-toggle-feature name="data" selector=".data" action="disable" default="off" emit="transcription" subscribe="transcription">
+                                <span style="color:#F3904B; font-weight:bold;">Date</span>
+                            </pb-toggle-feature>
+                            <br/>
+                            <pb-toggle-feature name="bibl" selector=".bibl" action="disable" default="off" emit="transcription" subscribe="transcription">
+                                <span style="color:#9C6C4A; font-weight:bold;">Bibliografia e riferimenti a opere</span>
+                            </pb-toggle-feature>
+                            <br/>
+                            <pb-toggle-feature name="term" selector=".term" action="disable" default="off" emit="transcription" subscribe="transcription">
+                                <span style="color:#e30ba9; font-weight:bold;">Termini ambigui</span>
+                            </pb-toggle-feature>
+                            <br/>
+                            <pb-toggle-feature name="num" selector=".num" action="disable" default="off" emit="transcription" subscribe="transcription">
+                                <span style="color:#E9B321; font-weight:bold;">Numeri</span>
+                            </pb-toggle-feature>
+                            <br/>
+                            <pb-toggle-feature name="foreign" selector=".foreign" action="disable" default="off" emit="transcription" subscribe="transcription">
+                                <span style="color:#03a392; font-weight:bold;">Parole o frasi in lingua straniera</span>
+                            </pb-toggle-feature>
+                        </div>
+                    </pb-drawer>
+                    
+                    <pb-drawer toggle="mappa_luoghi" position="right" class="tocDrawer" emit="toc" subscribe="transcription">
+                        <div class="drawer-content">
+                            <div>La mappa riporta tutti i luoghi che si trovano nella pagina che stai visualizzando <br/>
+                            </div>
+                            <pb-leaflet-map id="map" zoom="4" subscribe="transcription" emit="map" access-token="pk.eyJ1Ijoid29sZmdhbmdtbSIsImEiOiJjam1kMjVpMnUwNm9wM3JwMzdsNGhhcnZ0In0.v65crewF-dkNsPF3o1Q4uw" latitude="48.85667" longitude="2.35194"/>
+                        <!--latitude="48.85667" longitude="2.35194" <pb-map-layer show="" base="" label="OpenTopo Map" url="https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token={accessToken}" max-zoom="19" access-token="pk.eyJ1Ijoid29sZmdhbmdtbSIsImEiOiJjam1kMjVpMnUwNm9wM3JwMzdsNGhhcnZ0In0.v65crewF-dkNsPF3o1Q4uw" attribution="© Mapbox © OpenStreetMap">
+                        </pb-map-layer>-->
+                        </div>
+                    </pb-drawer>
+
+                    <section class="breadcrumbs">
+                        <h1>
+                            <pb-view id="title-view1" src="document1" xpath="//teiHeader/fileDesc/titleStmt/title[@type='full']" view="single">
+                                <pb-param name="mode" value="title"/>
+                            </pb-view>
+                        </h1>
+                    </section>
+                    
+                    <main class="content-body">
+                        <pb-view id="view1" src="document1" style="background-color: rgba(153, 203, 255, 0.1); padding: 3%;" load-css="resources/css/applicazione.css" column-separator=".tei-cb" view="page" append-footnotes="append-footnotes" subscribe="transcription" emit="transcription">
+                            <pb-param name="mode" value="localizzazione"/>
+                        </pb-view>
+                        <pb-facsimile id="facsimile" type="image" default-zoom-level="1" show-navigation-control="show-navigation-control" show-navigator="show-navigator" show-home-control="" show-download-control="" subscribe="transcription">
+                            <h3 slot="before">Passa il cursore sulla freccia all'inizio di una riga testuale per evidenziare la riga corrispondente nell'immagine</h3>
+                            <p slot="before">In alcune pagine le ultime righe dell'ultima nota non trovano corrispondenza nelle righe dell'immagine. Questo è dato dal fatto che il curatore del sito ha deciso di restituire la nota nella sua interezza in un'unica pagina, anche se nell'articolo il testo si trova spezzato in due pagine.</p>
+                        </pb-facsimile>
+                    </main>
+
+
+                </app-header-layout>
+            </app-drawer-layout>
+        </pb-page>
+        <div class="splash"/>
+    </body>
+</html>
